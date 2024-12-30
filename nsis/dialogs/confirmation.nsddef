@@ -4,7 +4,7 @@ This file was created by NSISDialogDesigner 1.4.4.0
 http://coolsoft.altervista.org/nsisdialogdesigner
 Do not edit manually!
 -->
-<Dialog Name="confirmation" Title="Confirmation Page" Subtitle="Please confirm your choices for Jellyfin Server installation" GenerateShowFunction="False">
+<Dialog Name="confirmation" Title="Confirmation Page" Subtitle="Please confirm your choices for Media Server installation" GenerateShowFunction="False">
   <HeaderCustomScript>!include "helpers\StrSlash.nsh"</HeaderCustomScript>
   <CreateFunctionCustomScript>${StrSlash} '$0' $INSTDIR
 

@@ -24,7 +24,7 @@ Function fnc_confirmation_Create
   ${If} $hCtl_confirmation == error
     Abort
   ${EndIf}
-  !insertmacro MUI_HEADER_TEXT "Confirmation Page" "Please confirm your choices for Jellyfin Server installation"
+  !insertmacro MUI_HEADER_TEXT "Confirmation Page" "Please confirm your choices for Media Server installation"
 
   ; === ConfirmRichText (type: RichText) ===
   nsDialogs::CreateControl /NOUNLOAD "RichEdit20A" ${ES_READONLY}|${WS_VISIBLE}|${WS_CHILD}|${WS_TABSTOP}|${WS_VSCROLL}|${ES_MULTILINE}|${ES_WANTRETURN} ${WS_EX_STATICEDGE} 8u 7u 280u 126u ""

@@ -29,7 +29,7 @@ Function fnc_setuptype_Create
   ${If} $hCtl_setuptype == error
     Abort
   ${EndIf}
-  !insertmacro MUI_HEADER_TEXT "Setup Type" "Control how Jellyfin is installed."
+  !insertmacro MUI_HEADER_TEXT "Setup Type" "Control how Media is installed."
   
   ; === Label1 (type: Label) ===
   ${NSD_CreateLabel} 8u 83u 249u 16u "Service Install is not recommended."
@@ -38,7 +38,7 @@ Function fnc_setuptype_Create
   SetCtlColors $hCtl_setuptype_Label1 0xFF0000 0xF0F0F0
   
   ; === InstallasaServiceLabel (type: Label) ===
-  ${NSD_CreateLabel} 8u 71u 280u 12u "Install Jellyfin as a service. Additional setup is required to access network shares."
+  ${NSD_CreateLabel} 8u 71u 280u 12u "Install Media as a service. Additional setup is required to access network shares."
   Pop $hCtl_setuptype_InstallasaServiceLabel
   
   ; === InstallasaService (type: RadioButton) ===
@@ -47,7 +47,7 @@ Function fnc_setuptype_Create
   ${NSD_AddStyle} $hCtl_setuptype_InstallasaService ${WS_GROUP}
   
   ; === BasicInstallLabel (type: Label) ===
-  ${NSD_CreateLabel} 8u 24u 280u 28u "The basic install will run Jellyfin in your current user account.$\nThis is recommended for most users."
+  ${NSD_CreateLabel} 8u 24u 280u 28u "The basic install will run Media in your current user account.$\nThis is recommended for most users."
   Pop $hCtl_setuptype_BasicInstallLabel
   
   ; === BasicInstall (type: RadioButton) ===

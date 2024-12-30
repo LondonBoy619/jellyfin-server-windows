@@ -37,17 +37,17 @@ Unicode True
 
 !getdllversion "$%InstallLocation%\jellyfin.dll" ver_ ;Align installer version with jellyfin.dll version
 
-Name "Jellyfin Server ${ver_1}.${ver_2}.${ver_3}" ; This is referred in various header text labels
-OutFile "jellyfin_${ver_1}.${ver_2}.${ver_3}_windows-x64.exe" ; Naming convention jellyfin_{version}_windows-x64.exe
-BrandingText "Jellyfin Server ${ver_1}.${ver_2}.${ver_3} Installer" ; This shows in just over the buttons
+Name "Media Server ${ver_1}.${ver_2}.${ver_3}" ; This is referred in various header text labels
+OutFile "media_${ver_1}.${ver_2}.${ver_3}_windows-x64.exe" ; Naming convention jellyfin_{version}_windows-x64.exe
+BrandingText "Media Server ${ver_1}.${ver_2}.${ver_3} Installer" ; This shows in just over the buttons
 
 ; installer attributes, these show up in details tab on installer properties
 VIProductVersion "${ver_1}.${ver_2}.${ver_3}.0" ; VIProductVersion format, should be X.X.X.X
 VIFileVersion "${ver_1}.${ver_2}.${ver_3}.0" ; VIFileVersion format, should be X.X.X.X
-VIAddVersionKey "ProductName" "Jellyfin Server"
+VIAddVersionKey "ProductName" "Media Server"
 VIAddVersionKey "FileVersion" "${ver_1}.${ver_2}.${ver_3}.0"
-VIAddVersionKey "LegalCopyright" "(c) 2024 Jellyfin Contributors. Code released under the GNU General Public License."
-VIAddVersionKey "FileDescription" "Jellyfin Server: The Free Software Media System"
+VIAddVersionKey "LegalCopyright" "(c) 2024 Media Contributors. Code released under the GNU General Public License."
+VIAddVersionKey "FileDescription" "Media Server"
 
 ;TODO, check defaults
 InstallDir ${INSTALL_DIRECTORY} ;Default installation folder
@@ -73,7 +73,7 @@ CRCCheck on ; make sure the installer wasn't corrupted while downloading
 ;Pages
 
 ; Welcome Page
-    !define MUI_WELCOMEPAGE_TEXT "The installer will ask for details to install Jellyfin Server."
+    !define MUI_WELCOMEPAGE_TEXT "The installer will ask for details to install Media Server."
     !insertmacro MUI_PAGE_WELCOME
 
 ; License Page
@@ -92,14 +92,14 @@ CRCCheck on ; make sure the installer wasn't corrupted while downloading
 ; Install folder page
     !define MUI_PAGE_CUSTOMFUNCTION_PRE HideInstallDirectoryPage ; Controls when to hide / show
     !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "Install folder" ; shows just above the folder selection dialog
-    !define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install Jellyfin in the following folder."
+    !define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will install Media in the following folder."
     !insertmacro MUI_PAGE_DIRECTORY
 
 ; Data folder Page
     !define MUI_PAGE_CUSTOMFUNCTION_PRE HideDataDirectoryPage ; Controls when to hide / show
     !define MUI_PAGE_HEADER_TEXT "Choose Data Location"
-    !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install the Jellyfin Server data."
-    !define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will set the following folder for Jellyfin Server data.$\nDo not choose the server install folder."
+    !define MUI_PAGE_HEADER_SUBTEXT "Choose the folder in which to install the Media Server data."
+    !define MUI_DIRECTORYPAGE_TEXT_TOP "Setup will set the following folder for Media Server data.$\nDo not choose the server install folder."
     !define MUI_DIRECTORYPAGE_TEXT_DESTINATION "Data folder"
     !define MUI_DIRECTORYPAGE_VARIABLE $_JELLYFINDATADIR_
     !insertmacro MUI_PAGE_DIRECTORY
@@ -154,10 +154,10 @@ Section "!Jellyfin Server (required)" InstallJellyfinServer
         ; ${If} $_EXISTINGSERVICE_ == 'Yes'
         ;     ExecWait '"$INSTDIR\nssm.exe" stop JellyfinServer' $0
         ;     ${If} $0 <> 0
-        ;         MessageBox MB_OK|MB_ICONSTOP "Could not stop the Jellyfin Server service."
+        ;         MessageBox MB_OK|MB_ICONSTOP "Could not stop the Media Server service."
         ;         Abort
         ;     ${EndIf}
-        ;     DetailPrint "Stopped Jellyfin Server service, $0"
+        ;     DetailPrint "Stopped Media Server service, $0"
         ; ${EndIf}
 
     SetOutPath "$INSTDIR"
@@ -176,11 +176,11 @@ Section "!Jellyfin Server (required)" InstallJellyfinServer
     StrCpy $_JELLYFINVERSION_ "${ver_1}.${ver_2}.${ver_3}" ;
 
     ; Write the uninstall keys for Windows
-    WriteRegStr HKLM "${INSTDIR_REG_KEY}" "DisplayName" "Jellyfin Server $_JELLYFINVERSION_"
+    WriteRegStr HKLM "${INSTDIR_REG_KEY}" "DisplayName" "Media Server $_JELLYFINVERSION_"
     WriteRegExpandStr HKLM "${INSTDIR_REG_KEY}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
     WriteRegStr HKLM "${INSTDIR_REG_KEY}" "DisplayIcon" '"$INSTDIR\Uninstall.exe",0'
-    WriteRegStr HKLM "${INSTDIR_REG_KEY}" "Publisher" "The Jellyfin Project"
-    WriteRegStr HKLM "${INSTDIR_REG_KEY}" "URLInfoAbout" "https://jellyfin.org/"
+    WriteRegStr HKLM "${INSTDIR_REG_KEY}" "Publisher" "The Media Project"
+    WriteRegStr HKLM "${INSTDIR_REG_KEY}" "URLInfoAbout" "https://media.org/"
     WriteRegStr HKLM "${INSTDIR_REG_KEY}" "DisplayVersion" "$_JELLYFINVERSION_"
     WriteRegDWORD HKLM "${INSTDIR_REG_KEY}" "NoModify" 1
     WriteRegDWORD HKLM "${INSTDIR_REG_KEY}" "NoRepair" 1
@@ -192,30 +192,30 @@ SectionEnd
 Section "Jellyfin Server Service" InstallService
 ${If} $_INSTALLSERVICE_ == "Yes" ; Only run this if we're going to install the service!
     ExecWait '"$INSTDIR\nssm.exe" statuscode JellyfinServer' $0
-    DetailPrint "Jellyfin Server service statuscode, $0"
+    DetailPrint "Media Server service statuscode, $0"
     ${If} $0 == 0
         InstallRetry:
         ExecWait '"$INSTDIR\nssm.exe" install JellyfinServer "$INSTDIR\jellyfin.exe" --service --datadir \"$_JELLYFINDATADIR_\"' $0
         ${If} $0 <> 0
-            !insertmacro ShowError "Could not install the Jellyfin Server service." InstallRetry
+            !insertmacro ShowError "Could not install the Media Server service." InstallRetry
         ${EndIf}
-        DetailPrint "Jellyfin Server Service install, $0"
+        DetailPrint "Media Server Service install, $0"
     ${Else}
-        DetailPrint "Jellyfin Server Service exists, updating..."
+        DetailPrint "Media Server Service exists, updating..."
 
         ConfigureApplicationRetry:
         ExecWait '"$INSTDIR\nssm.exe" set JellyfinServer Application "$INSTDIR\jellyfin.exe"' $0
         ${If} $0 <> 0
-            !insertmacro ShowError "Could not configure the Jellyfin Server service." ConfigureApplicationRetry
+            !insertmacro ShowError "Could not configure the Media Server service." ConfigureApplicationRetry
         ${EndIf}
-        DetailPrint "Jellyfin Server Service setting (Application), $0"
+        DetailPrint "Media Server Service setting (Application), $0"
 
         ConfigureAppParametersRetry:
         ExecWait '"$INSTDIR\nssm.exe" set JellyfinServer AppParameters --service --datadir \"$_JELLYFINDATADIR_\"' $0
         ${If} $0 <> 0
-            !insertmacro ShowError "Could not configure the Jellyfin Server service." ConfigureAppParametersRetry
+            !insertmacro ShowError "Could not configure the Media Server service." ConfigureAppParametersRetry
         ${EndIf}
-        DetailPrint "Jellyfin Server Service setting (AppParameters), $0"
+        DetailPrint "Media Server Service setting (AppParameters), $0"
     ${EndIf}
 
 
@@ -223,41 +223,41 @@ ${If} $_INSTALLSERVICE_ == "Yes" ; Only run this if we're going to install the s
     ConfigureStartRetry:
     ExecWait '"$INSTDIR\nssm.exe" set JellyfinServer Start SERVICE_DELAYED_AUTO_START' $0
     ${If} $0 <> 0
-        !insertmacro ShowError "Could not configure the Jellyfin Server service." ConfigureStartRetry
+        !insertmacro ShowError "Could not configure the Media Server service." ConfigureStartRetry
     ${EndIf}
-    DetailPrint "Jellyfin Server Service setting (Start), $0"
+    DetailPrint "Media Server Service setting (Start), $0"
 
     ConfigureDescriptionRetry:
     ExecWait '"$INSTDIR\nssm.exe" set JellyfinServer Description "Jellyfin Server: The Free Software Media System"' $0
     ${If} $0 <> 0
-        !insertmacro ShowError "Could not configure the Jellyfin Server service." ConfigureDescriptionRetry
+        !insertmacro ShowError "Could not configure the Media Server service." ConfigureDescriptionRetry
     ${EndIf}
-    DetailPrint "Jellyfin Server Service setting (Description), $0"
+    DetailPrint "Media Server Service setting (Description), $0"
     ConfigureDisplayNameRetry:
     ExecWait '"$INSTDIR\nssm.exe" set JellyfinServer DisplayName "Jellyfin Server"' $0
     ${If} $0 <> 0
-        !insertmacro ShowError "Could not configure the Jellyfin Server service." ConfigureDisplayNameRetry
+        !insertmacro ShowError "Could not configure the Media Server service." ConfigureDisplayNameRetry
 
     ${EndIf}
-    DetailPrint "Jellyfin Server Service setting (DisplayName), $0"
+    DetailPrint "Media Server Service setting (DisplayName), $0"
 
     Sleep 3000
     ${If} $_SERVICEACCOUNTTYPE_ == "NetworkService" ; the default install using NSSM is Local System
         ConfigureNetworkServiceRetry:
         ExecWait '"$INSTDIR\nssm.exe" set JellyfinServer Objectname "NT Authority\NetworkService"' $0
         ${If} $0 <> 0
-            !insertmacro ShowError "Could not configure the Jellyfin Server service account." ConfigureNetworkServiceRetry
+            !insertmacro ShowError "Could not configure the Media Server service account." ConfigureNetworkServiceRetry
         ${EndIf}
-        DetailPrint "Jellyfin Server service account change, $0"
+        DetailPrint "Media Server service account change, $0"
     ${EndIf}
 
     Sleep 3000
     ConfigureDefaultAppExit:
         ExecWait '"$INSTDIR\nssm.exe" set JellyfinServer AppExit Default Exit' $0
         ${If} $0 <> 0
-            !insertmacro ShowError "Could not configure the Jellyfin Server service app exit action." ConfigureDefaultAppExit
+            !insertmacro ShowError "Could not configure the Media Server service app exit action." ConfigureDefaultAppExit
         ${EndIf}
-        DetailPrint "Jellyfin Server service exit action set, $0"
+        DetailPrint "Media Server service exit action set, $0"
 ${EndIf}
 SectionEnd
 
@@ -267,9 +267,9 @@ ${AndIf} $_INSTALLSERVICE_ == "Yes"
     StartRetry:
     ExecWait '"$INSTDIR\nssm.exe" start JellyfinServer' $0
     ${If} $0 <> 0
-        !insertmacro ShowError "Could not start the Jellyfin Server service." StartRetry
+        !insertmacro ShowError "Could not start the Media Server service." StartRetry
     ${EndIf}
-    DetailPrint "Jellyfin Server service start, $0"
+    DetailPrint "Media Server service start, $0"
 ${EndIf}
 SectionEnd
 
@@ -287,7 +287,7 @@ SectionEnd
 ;Descriptions
 
 ;Language strings
-    LangString DESC_InstallJellyfinServer ${LANG_ENGLISH} "Install Jellyfin Server"
+    LangString DESC_InstallJellyfinServer ${LANG_ENGLISH} "Install Media Server"
     LangString DESC_InstallService ${LANG_ENGLISH} "Install As a Service"
 
 ;Assign language strings to sections
@@ -305,10 +305,10 @@ Section "Uninstall"
     ReadRegStr $_JELLYFINDATADIR_ HKLM "${REG_CONFIG_KEY}" "DataFolder"  ; read the data folder
     ReadRegStr $_SERVICEACCOUNTTYPE_ HKLM "${REG_CONFIG_KEY}" "ServiceAccountType"  ; read the account name
 
-    DetailPrint "Jellyfin Install location: $INSTDIR"
-    DetailPrint "Jellyfin Data folder: $_JELLYFINDATADIR_"
+    DetailPrint "Media Install location: $INSTDIR"
+    DetailPrint "Media Data folder: $_JELLYFINDATADIR_"
 
-    MessageBox MB_YESNO|MB_ICONINFORMATION "Do you want to keep the Jellyfin Server data folder? $\r$\nIf unsure choose YES." /SD IDYES IDYES PreserveData IDNO DeleteConfirmation
+    MessageBox MB_YESNO|MB_ICONINFORMATION "Do you want to keep the Media Server data folder? $\r$\nIf unsure choose YES." /SD IDYES IDYES PreserveData IDNO DeleteConfirmation
 
     DeleteConfirmation:
     MessageBox MB_YESNOCANCEL|MB_ICONEXCLAMATION "Are you sure? Everything in $\r$\n$_JELLYFINDATADIR_ $\r$\nwill be deleted. $\r$\nIf you are sure, press YES." IDYES DeleteData IDNO PreserveData ;IDCANCEL StopNow
@@ -332,7 +332,7 @@ Section "Uninstall"
 
     ExecWait "TaskKill /IM Jellyfin.Windows.Tray.exe /F"
     ExecWait '"$INSTDIR\nssm.exe" statuscode JellyfinServer' $0
-    DetailPrint "Jellyfin Server service statuscode, $0"
+    DetailPrint "Media Server service statuscode, $0"
     IntCmp $0 0 NoServiceUninstall ; service doesn't exist, may be run from desktop shortcut
 
     Sleep 3000 ; Give time for Windows to catchup
@@ -340,16 +340,16 @@ Section "Uninstall"
     UninstallStopRetry:
     ExecWait '"$INSTDIR\nssm.exe" stop JellyfinServer' $0
     ${If} $0 <> 0
-        !insertmacro ShowError "Could not stop the Jellyfin Server service." UninstallStopRetry
+        !insertmacro ShowError "Could not stop the Media Server service." UninstallStopRetry
     ${EndIf}
-    DetailPrint "Stopped Jellyfin Server service, $0"
+    DetailPrint "Stopped Media Server service, $0"
 
     UninstallRemoveRetry:
     ExecWait '"$INSTDIR\nssm.exe" remove JellyfinServer confirm' $0
     ${If} $0 <> 0
-        !insertmacro ShowError "Could not remove the Jellyfin Server service." UninstallRemoveRetry
+        !insertmacro ShowError "Could not remove the Media Server service." UninstallRemoveRetry
     ${EndIf}
-    DetailPrint "Removed Jellyfin Server service, $0"
+    DetailPrint "Removed Media Server service, $0"
 
     Sleep 3000 ; Give time for Windows to catchup
 
@@ -393,11 +393,11 @@ Function .onInit
     ReadRegStr "$0" HKLM "${REG_CONFIG_KEY}" "InstallFolder"
     IfErrors NoExisitingInstall
 
-    DetailPrint "Existing Jellyfin Server detected at: $0"
+    DetailPrint "Existing Media Server detected at: $0"
     StrCpy "$INSTDIR" "$0" ; set the location fro registry as new default
 
     StrCpy $_EXISTINGINSTALLATION_ "Yes" ; Set our flag to be used later
-    SectionSetText ${InstallJellyfinServer} "Upgrade Jellyfin Server (required)" ; Change install text to "Upgrade"
+    SectionSetText ${InstallJellyfinServer} "Upgrade Media Server (required)" ; Change install text to "Upgrade"
 
     ; check if service was run using Network Service account
     ClearErrors
@@ -412,7 +412,7 @@ Function .onInit
     ; check if there is a service called Jellyfin, there should be
     ; hack : nssm statuscode Jellyfin will return non zero return code in case it exists
     ExecWait '"$INSTDIR\nssm.exe" statuscode JellyfinServer' $0
-    DetailPrint "Jellyfin Server service statuscode, $0"
+    DetailPrint "Media Server service statuscode, $0"
     IntCmp $0 0 NoService ; service doesn't exist, may be run from desktop shortcut
 
     ; if service was detected, set defaults going forward.
@@ -433,13 +433,13 @@ Function .onInit
             nsProcess::_FindProcess "$3"
             Pop $R3
             ${If} $R3 = 0
-                !insertmacro ShowErrorFinal "Jellyfin is running. Please close it first."
+                !insertmacro ShowErrorFinal "Media is running. Please close it first."
                 Abort
             ${EndIf}
         ${EndIf}
 
     ; Let the user know that we'll upgrade and provide an option to quit
-    MessageBox MB_OKCANCEL|MB_ICONINFORMATION "Existing installation of Jellyfin Server was detected, it'll be upgraded, settings will be retained. \
+    MessageBox MB_OKCANCEL|MB_ICONINFORMATION "Existing installation of Media Server was detected, it'll be upgraded, settings will be retained. \
     $\r$\nClick OK to proceed, Cancel to exit installer." /SD IDOK IDOK ProceedWithUpgrade
     Quit ; Quit if the user is not sure about upgrade
 
